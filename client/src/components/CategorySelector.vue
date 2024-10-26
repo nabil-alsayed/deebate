@@ -108,12 +108,16 @@ export default {
 
 @media (max-width: 992px) {
   .category-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 120px);
-    grid-template-rows: repeat(1, fit-content());
-    overflow: hidden;
+    display: flex;
+    flex-direction: row;
     overflow-x: auto;
+    overflow-y: visible;
     scrollbar-width: none;
+    padding: 10px 10px;
+  }
+
+  .category-card {
+    min-width: 120px;
   }
 
   .category-grid::-webkit-scrollbar {
