@@ -2,10 +2,10 @@
 
 ```bash
 # Clone repository
-git clone git@git.chalmers.se:courses/dit342/group-00-web.git
+git clone git@github.com:nabil-alsayed/Deebate.git
 
 # Change into the directory
-cd group-00-web
+cd Deebate
 
 # Setup backend
 cd server && npm install
@@ -31,20 +31,20 @@ The purpose of this project is to create a platform where users can engage in st
 ### Pages
 
 - Home Page:
-  Displays an overview of the website, including active and popular debates. Users can browse debates, log in, or sign up.
-  Users can explore debates or proceed to log in for full functionality.
+  Displays an overview of the website, including active and closed debates. Users can browse debates.
+  Users can explore debates and vist other users profiles.
 - Debate List Page (Extended scope):
-  Shows a list of all available debates. Users can search for debates by topic, date, or popularity.
-  Users can click on a debate to view its details and participate in voting or commenting.
+  Shows a list of all available debates. Users can filter for debates by category.
+  Users can click on view more in the debate to view all arguments of that debate.
 - Debate Page:
   Displays the details of a specific debate, including the arguments from both debators.
-  Users can read arguments, cast their votes for the stronger argument, and leave comments.
+  Users can read arguments, cast their votes for the stronger side in the debate, and leave comments on arguments.
 - Create Debate Invite Page:
-  Allows Debators to create a new debate by entering the topic, description, and initiate arguments by inviting users.
-  Debators can submit new debates or update/delete existing ones.
+  Allows Debators to create a new debate by entering the topic, and initiate arguments.
+  Debators can submit new debates or delete existing ones.
 - Profile Page:
-  Displays the user’s information, including their role (Debator or Voter), history of debates, and earned points.
-  Users can update their profile details, see their past activity, and check their ranking (if applicable).
+  Displays the user’s information, last log in, and history of debates.
+  Users can update their profile details and see their past debates.
 - Login/Sign-up Page:
   Provides a form for users to log into the system or create a new account.
   Users can enter their credentials to access debates or sign up if they are new.
@@ -65,7 +65,7 @@ Key Components:
   Implementation: Provide users with comprehensive feedback, including AI-driven insights into why a particular side won and suggestions for improving argument quality in future debates.
 
 Form of Presentation:
-The evaluation will be presented in form of a separate field below the final debate in the body of the debate component, and it will highlighted as Final AI Judge's Evaluation
+The evaluation will be presented in form of a separate argument below the arguments list in the body of the debate component, and it will highlight the side winning by analysis in the side tag next to ChatGPT's title. The winner by AI will get a golden trophy icon/badge and the side winning by votes will receive a people icon/badge in green next to each argument labeled with that side.
 
 ### Entity-Relationship (ER) Diagram
 
