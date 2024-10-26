@@ -21,7 +21,7 @@
 
           <!-- Category Selector -->
           <div v-if="isMobileLayout">
-            <h2 class="title">Category</h2>
+            <h2 class="title" style="margin: 0">Category</h2>
             <CategorySelector @category-selected="filterDebatesByCategory" />
           </div>
 
