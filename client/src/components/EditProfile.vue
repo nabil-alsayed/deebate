@@ -422,7 +422,6 @@ input:disabled {
 
 @media (max-width: 992px) {
   .edit-profile {
-    margin: 0 10px;
     width: auto;
   }
 }

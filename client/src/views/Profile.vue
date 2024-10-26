@@ -101,6 +101,8 @@ export default{
 
   .right-bar {
     order: -1;
+    margin: 0 10px;
+    width: auto;
   }
 
 }
