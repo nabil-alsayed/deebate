@@ -274,7 +274,7 @@ export default {
   z-index: 0;
   padding: 15px;
   border: 0.5px solid #dad9d9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
 }
 
 .alert-box {
@@ -418,5 +418,12 @@ input:disabled {
 .chevron-container:hover {
   background-color: #056149;
   color: white;
+}
+
+@media (max-width: 992px) {
+  .edit-profile {
+    margin: 0 10px;
+    width: auto;
+  }
 }
 </style>

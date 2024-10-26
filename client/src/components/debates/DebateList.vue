@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column full-width row-gap-1" style="width: 100%">
+  <div class="d-flex flex-column full-width" style="width: 100%">
     <div class="d-flex flex-row justify-content-between align-items-center" style="color: grey">
       <h2 class="title">{{ debates.length }} Debates</h2>
       <div class="d-flex flex-row column-gap-2 align-items-center justify-content-center" style="font-size: 20px">

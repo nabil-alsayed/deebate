@@ -20,7 +20,7 @@
           </div>
 
           <!-- Category Selector -->
-          <div v-if="isMobileLayout" class="d-flex flex-column">
+          <div v-if="isMobileLayout">
             <h2 class="title">Category</h2>
             <CategorySelector @category-selected="filterDebatesByCategory" />
           </div>
@@ -140,7 +140,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0;
 }
 
 #debates-sections {
@@ -159,10 +158,6 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   row-gap: 15px;
-}
-
-.right-bar {
-  padding: 0 10px;
 }
 
 /* Responsive */

@@ -18,7 +18,7 @@
           <DebateList :user="userId" page="profile"/>
         </div>
         <!-- WIDGETS -->
-        <div class="right-bar">
+        <div class="right-bar" style="min-width: 250px">
           <h2 class="title">Edit Profile</h2>
           <EditProfile />
         </div>
@@ -88,11 +88,6 @@ export default{
 #debates-sections {
   width: 100%;
   padding: 0 8px;
-}
-
-.right-bar {
-  width: auto;
-  padding: 0 10px;
 }
 
 @media (max-width: 992px) {

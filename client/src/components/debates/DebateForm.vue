@@ -143,7 +143,7 @@ export default {
   flex-direction: column;
   row-gap: 10px;
   border: 0.5px solid #dad9d9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
   border-radius: 20px;
   padding: 20px;
 }
