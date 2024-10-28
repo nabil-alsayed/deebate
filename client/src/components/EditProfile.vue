@@ -279,7 +279,7 @@ export default {
 
 .alert-box {
   position: fixed;
-  top: 0;
+  top: 64px;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px;
@@ -423,6 +423,11 @@ input:disabled {
 @media (max-width: 992px) {
   .edit-profile {
     width: auto;
+  }
+
+  .alert-box {
+    top: auto;
+    bottom: 40px;
   }
 }
 </style>
