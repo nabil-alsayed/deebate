@@ -11,3 +11,4 @@
     { "src": "/uploads/(.*)", "dest": "/uploads/$1" }
   ]
 }
+
