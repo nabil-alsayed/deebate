@@ -3,6 +3,35 @@
 const User = require('../../models/user');
 const mongoose = require('mongoose');
 const { authenticateRole, hashPassword } = require("../../utils/utils");
+const { uploadImageToS3 } = require('../../utils/s3'); // Import the S3 utility
+
+const uploadProfileImage = async (req, res) => {
+  const { id } = req.user;
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Upload to S3 and get the URL
+    const profileImgUrl = await uploadImageToS3(req.file, user.id);
+
+    // Update the user's profileImg field with the S3 image URL
+    user.profileImg = profileImgUrl;
+    await user.save();
+
+    res.status(200).json({ message: 'Profile image updated successfully.', profileImg: user.profileImg });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error uploading profile image', error: error.message });
+  }
+};
 
 // Search for user
 
@@ -113,7 +142,6 @@ const editUser = async (req, res) => {
   const { userId } = req.params;
 
   const allowedAttributes = ['emailAddress', 'username', 'password', 'firstName', 'lastName'];
-
   const isValidRequest = Object.keys(updates).every((key) => allowedAttributes.includes(key));
 
   if (!isValidRequest) {
@@ -126,7 +154,6 @@ const editUser = async (req, res) => {
 
   try {
     const user = await User.findById(userId);
-
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
@@ -142,12 +169,11 @@ const editUser = async (req, res) => {
 
     // Handle profile image upload
     if (req.file) {
-      // Store the full URL of the image
-      updates.profileImg = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      const profileImgUrl = await uploadImageToS3(req.file, user.id); 
+      updates.profileImg = profileImgUrl; 
     }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true }).lean();
-
     delete updatedUser.password;
 
     res.status(200).json(updatedUser);
@@ -211,39 +237,12 @@ const deleteAllUsers = async (req, res) => {
   }
 }
 
-
-const uploadProfileImage = async (req, res) => {
-  const { id } = req.user;
-
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded.' });
-    }
-
-    const user = await User.findById({id}); // Assuming req.user contains authenticated user info
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-
-    // Update the user's profileImg field with the file path
-    user.profileImg = `/uploads/${req.file.filename}`;
-
-    await user.save();
-
-    res.status(200).json({ message: 'Profile image updated successfully.', profileImg: user.profileImg });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error uploading profile image', error: error.message });
-  }
-};
-
 module.exports = {
+  uploadProfileImage,
   searchUsers,
   getAllUsers,
   getUser,
   editUser,
   deleteUser,
   deleteAllUsers,
-  uploadProfileImage
 };
