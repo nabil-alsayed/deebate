@@ -1,4 +1,3 @@
-// server/utils/s3.js
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const bucketName = process.env.BUCKET_NAME;
