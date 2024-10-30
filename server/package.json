@@ -2,7 +2,7 @@
   "name": "server",
   "version": "0.1.0",
   "engines": {
-    "node": "20.x.x",
+    "node": "20",
     "npm": ">=9.x"
   },
   "private": true,
