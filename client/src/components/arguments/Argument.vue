@@ -311,7 +311,7 @@ export default {
 .skeleton {
   background-color: #e0e0e0;
   border-radius: 4px;
-  animation: pulse 1s infinite;
+  animation: pulse 1.5s infinite;
 }
 
 .skeleton-avatar {
