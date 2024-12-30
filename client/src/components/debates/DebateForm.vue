@@ -64,9 +64,11 @@
 <script>
 import { Api } from '@/api/v1/Api.js';
 import { getLoggedInUser } from '@/api/v1/usersApi.js';
+import {BButton} from "bootstrap-vue-next";
 
 export default {
   name: "DebateForm",
+  components: {BButton},
   data() {
     return {
       topic: "",

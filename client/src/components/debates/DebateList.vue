@@ -190,7 +190,7 @@ li {
 .skeleton {
   background-color: #e0e0e0;
   border-radius: 4px;
-  animation: pulse 1.5s infinite;
+  animation: pulse 0.3s infinite;
 }
 
 .skeleton-header {
