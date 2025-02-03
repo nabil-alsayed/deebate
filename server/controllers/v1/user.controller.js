@@ -66,7 +66,15 @@ const searchUsers = async (req, res) => {
       return res.status(404).json({ error: 'No users found.' });
     }
 
-    return res.status(200).json({ message: 'Users found', users });
+    // Make a copy of the users array and remove the sensitive fields from each user
+    const editedUsers = users.map((user) => {
+      const { password, __v, createdAt, updatedAt, role, emailAddress, invitationCode, verificationToken, verificationTokenExpires, ...editedUser } = user.toObject();
+      return editedUser;
+    });
+
+    console.log(editedUsers);
+
+    return res.status(200).json({ message: 'Users found', editedUsers });
   } catch (error) {
     return res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
@@ -84,8 +92,14 @@ const getAllUsers = async (req, res) => {
       res.status(401).json({ error: 'No registred users found.' });
     }
 
+    // Make a copy of the users array and remove the sensitive fields from each user
+    const editedUsers = users.map((user) => {
+      const { password, __v, createdAt, updatedAt, role, emailAddress, invitationCode, verificationToken, verificationTokenExpires, ...editedUser } = user.toObject();
+      return editedUser;
+    });
+
     // Return a 200 response with list of users
-    res.status(200).json({ message: 'Registred users were found: ', users });
+    res.status(200).json({ message: 'Registred users were found: ', editedUsers });
   } catch (error) {
     res
       .status(500)
@@ -126,10 +140,13 @@ const getUser = async (req, res) => {
       user.profileImg = `${req.protocol}://${req.get('host')}/${user.profileImg}`;
     }
 
+    // Remove sensitive fields from the user object
+    const { password, __v, createdAt, updatedAt, emailAddress, role, invitationCode, verificationToken, verificationTokenExpires, ...editedUser } = user.toObject();
+
     // Return a 200 response with the user data
     return res
         .status(200)
-        .json({ message: `Successfully found user with ID ${userId}`, user });
+        .json({ message: `Successfully found user with ID ${userId}`, user: editedUser });
   } catch (error) {
     res
         .status(500)
