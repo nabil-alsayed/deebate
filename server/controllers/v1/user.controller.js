@@ -74,7 +74,7 @@ const searchUsers = async (req, res) => {
 
     console.log(editedUsers);
 
-    return res.status(200).json({ message: 'Users found', editedUsers });
+    return res.status(200).json({ message: 'Users found', users: editedUsers });
   } catch (error) {
     return res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
@@ -99,7 +99,7 @@ const getAllUsers = async (req, res) => {
     });
 
     // Return a 200 response with list of users
-    res.status(200).json({ message: 'Registred users were found: ', editedUsers });
+    res.status(200).json({ message: 'Registred users were found: ', users : editedUsers });
   } catch (error) {
     res
       .status(500)
