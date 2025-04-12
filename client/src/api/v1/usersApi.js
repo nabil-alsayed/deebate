@@ -2,30 +2,21 @@ import { jwtDecode } from 'jwt-decode';
 import { Api } from './Api';
 
 /**
- * Get the currently logged-in user's data from the backend.
- *
- * @returns {Promise<Object|null>} The user object, or null if something fails.
+ * Safely retrieves the logged-in user's details.
+ * Returns null if the token is missing, invalid, or the user cannot be fetched.
  */
 export const getLoggedInUser = async () => {
   const token = localStorage.getItem('token');
-
-  if (!token) {
-    console.warn('No token found in localStorage.');
-    return null;
-  }
+  if (!token) return null;
 
   let userId;
 
   try {
     const decoded = jwtDecode(token);
     userId = decoded?.id;
-
-    if (!userId) {
-      console.warn('No user ID found in the decoded token.');
-      return null;
-    }
-  } catch (err) {
-    console.error('Failed to decode token:', err);
+    if (!userId) return null;
+  } catch (_) {
+    // Silent fail: token is invalid or tampered with
     return null;
   }
 
@@ -37,8 +28,8 @@ export const getLoggedInUser = async () => {
     });
 
     return response?.data?.user || null;
-  } catch (err) {
-    console.error('Failed to fetch user data:', err?.message || err);
+  } catch (_) {
+    // Silent fail: API issue or invalid user
     return null;
   }
 };
