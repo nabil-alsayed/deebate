@@ -1,6 +1,7 @@
 const User = require('./user');
 const bcrypt = require('bcryptjs');
 
+// This function creates a ChatGPT user if it doesn't already exist
 async function createChatGPTUser() {
     try {
         const existingUser = await User.findOne({ username: 'chatgpt' });
@@ -21,6 +22,7 @@ async function createChatGPTUser() {
                 profileImg: 'http://localhost:3001/uploads/1729394021188.webp',
             });
 
+            // Save the new user to the database
             await chatGPTUser.save();
             console.log('ChatGPT user created successfully');
         } else {

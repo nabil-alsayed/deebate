@@ -2,11 +2,12 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 
 // This can be used to generate a verification token for email verification
-
+// or password reset. It generates a random 6-digit number as a string.
 const generateVerificationToken = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+// This function generates a JWT token and sets it as a cookie in the response
 const generateTokenAndSetCookie = (res, user) => {
   const token = jwt.sign(
     {
@@ -137,6 +138,7 @@ const generatePrompt = async (type, debate) => {
       8) Engagement: Evaluate the level of engagement and interaction between participants.
       9) Conclusion: Analyze the quality of the conclusion and the final statements.
       10) Remember that your answer will be displayed in the form of a string, so make sure it is formatted correctly with spaces.\n
+      11) Keep your response concise and to the point, avoiding unnecessary verbosity.\n
       \n
     `;
 

@@ -4,6 +4,7 @@ const multer = require('multer');
 // Configure multer to use memory storage
 const storage = multer.memoryStorage();
 
+// Set up multer with the desired storage and file size limit
 const upload = multer({
     storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB

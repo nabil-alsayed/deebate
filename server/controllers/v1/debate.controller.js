@@ -7,6 +7,7 @@ const Argument = require('../../models/argument');
 const { generateResponse } = require('../../services/chatgpt.service');
 const { generatePrompt } = require("../../utils/utils");
 
+// Vote on a debate 
 const voteDebate = async (req, res) => {
   const { debateId } = req.params;
   const { userId, voteType } = req.body;

@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const { authenticateRole, hashPassword } = require("../../utils/utils");
 const { uploadImageToS3 } = require('../../utils/s3'); // Import the S3 utility
 
+// Upload profile image 
+// This function handles the upload of a profile image for a user
 const uploadProfileImage = async (req, res) => {
   const { id } = req.user;
 
@@ -34,7 +36,8 @@ const uploadProfileImage = async (req, res) => {
 };
 
 // Search for user
-
+// This function searches for users based on a search query
+// It allows searching by username, email address, first name, last name, or a combination of first and last names
 const searchUsers = async (req, res) => {
   const { search, limit } = req.query;
 

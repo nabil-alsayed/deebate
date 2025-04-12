@@ -6,6 +6,7 @@ const Argument = require('../../models/argument');
 const Comment = require('../../models/comment');
 const User = require('../../models/user');
 
+// Create a new argument for a debate
 const createArgument = async (req, res, next) => {
   const { debateId } = req.params;
   const { content, userId, side } = req.body; // Ensure `side` is passed
@@ -65,7 +66,7 @@ const createArgument = async (req, res, next) => {
 
 
 
-// Get all arguments
+// Get all arguments for a specific debate
 const getAllArguments = async (req, res) => {
   const { debateId } = req.params;
   try {

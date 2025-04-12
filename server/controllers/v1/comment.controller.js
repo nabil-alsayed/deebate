@@ -8,6 +8,7 @@ const addComment = async (req, res) => {
   const { content } = req.body;
   const { id: userId } = req.user;
 
+  // Validate the request body
   if (!content) {
     return res.status(400).json({ error: 'Missing Required Fields' });
   }

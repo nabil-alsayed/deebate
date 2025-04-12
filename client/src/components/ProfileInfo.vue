@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 import { Api } from "@/api/v1/Api.js";
 import { useRoute } from "vue-router";
 import defaultAvatar from "@/assets/avatars/user-avatar.svg";

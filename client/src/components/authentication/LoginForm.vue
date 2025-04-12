@@ -44,6 +44,7 @@ import { Api } from '@/api/v1/Api.js'
 
 export default {
   name: 'authentication',
+
   data() {
     return {
       user: {
@@ -58,39 +59,54 @@ export default {
       isLoading: false
     }
   },
+
   methods: {
     async login() {
-      this.isLoading = true;
+      this.isLoading = true
+
       try {
-        const response = await Api.post('/auth/login/', {
-          emailAddress: this.user.email,
-          password: this.user.password
-        });
+        // Validate user input
+        const { data } = await Api.post('/auth/login/', {
+          emailAddress: this.user.email.trim(),
+          password: this.user.password.trim()
+        })
 
-        // Set success message and show alert
-        this.message = {type: 'success', text: response.data.message || 'Login successful!'};
+        // Check if the response contains the expected data
+        if (!data || !data.token || !data.user) {
+          throw new Error('Invalid login response')
+        }
 
-        // Save the token in local storage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        // Redirect the user to the home page
-        this.$router.push('/');
+        // Store the token and user data in localStorage
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+
+        // Set the token in the API instance for future requests
+        this.message = {
+          type: 'success',
+          text: data.message || 'Login successful!'
+        }
+
+        // Redirect to the home page
+        this.$router.push('/')
       } catch (error) {
-        // Set error message and show alert
-        const errorMsg = error.response?.data?.message || 'Login failed, please try again.';
-        this.message = {type: 'error', text: errorMsg};
-        this.showAlert();
+        const errorMsg = error?.response?.data?.message || 'Login failed, please try again.'
+
+        this.message = {
+          type: 'error',
+          text: errorMsg
+        }
+
+        this.showAlert()
       } finally {
-        this.isLoading = false;
+        this.isLoading = false
       }
     },
+
     showAlert() {
-      // Show the alert
-      this.alertShown = true;
-      // Hide the alert after 2 seconds
+      this.alertShown = true
       setTimeout(() => {
-        this.alertShown = false;
-      }, 2000);
+        this.alertShown = false
+      }, 2000)
     }
   }
 }

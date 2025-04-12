@@ -1,5 +1,6 @@
 const OpenAI = require('openai');
 
+// Initialize OpenAI client with your API key
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -21,7 +22,7 @@ async function generateResponse(prompt) {
     throw error;
   }
 }
-
+// This function is used to generate a response from the OpenAI API
 module.exports = {
   generateResponse,
 };
