@@ -1,88 +1,102 @@
+<template>
+  <div class="w-100 border-dashed border-1">
+    <button v-if="opponentId" @click="joinDebate" class="btn btn-primary">Press to debate against @{{opponentUsername}}</button>
+    <button v-else @click="joinDebate" class="btn btn-primary">Press to join debate</button>
+  </div>
+</template>
+
 <script>
-import {Api} from "@/api/v1/Api.js";
+import { Api } from '@/api/v1/Api.js'
 
 export default {
-  name: "JoinDebate",
+  name: 'JoinDebate',
+
+  props: {
+    user: {
+      type: String,
+    },
+  },
+
   data() {
     return {
       opponentUsername: null,
       user: null,
     }
   },
-  props: {
-    user: {
-      type: String,
-    },
-  },
+
   mounted() {
-    this.setOpponent();
+    this.setOpponentUsername()
   },
+
   methods: {
-    joinDebate() {
-      const token = localStorage.getItem("token");
+    /**
+     * Attempt to join a debate by sending user and opponent IDs to the server
+     */
+    async joinDebate() {
       try {
-        if (!token) {
-          throw new Error("No token found");
+        const token = localStorage.getItem("token")
+        const userId = localStorage.getItem("userId")
+        const debateId = this.$route.params.id
+
+        if (!token || !userId || !debateId) {
+          throw new Error("Missing token, user ID, or debate ID")
         }
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-          throw new Error("No user ID found");
-        }
-        const debateId = this.$route.params.id;
-        if (!debateId) {
-          throw new Error("No debate ID found");
-        }
-        const data = {
+
+        await Api.post("/debates/join", {
           debateId,
           userId,
-          opponentId: this.opponentId,
-        };
-        Api.post("/debates/join", data, {
+          opponentId: this.opponentId
+        }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        })
+
       } catch (error) {
-        console.error("Failed to join debate:", error);
+        console.error("Failed to join debate:", error)
       }
     },
+
+    /**
+     * Fetch a user's username from the backend by their ID
+     * @param {String} id - User ID
+     * @returns {Promise<String>} - Username
+     */
     async fetchUsername(id) {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No token found");
-      }
       try {
-        const user = await Api.get(`/users/${id}`, {
+        const token = localStorage.getItem("token")
+        if (!token) throw new Error("No token found")
+
+        const { data } = await Api.get(`/users/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        return user.data.username;
+        })
+
+        return data.username
+
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Failed to fetch user:", error)
+        return null
       }
     },
-    setOpponent() {
+
+    /**
+     * Set the opponent's username if the opponentId exists
+     */
+    async setOpponentUsername() {
       if (this.opponentId) {
-        this.fetchUsername(this.opponentId)
-          .then((username) => {
-            this.opponentUsername = username;
-          })
-          .catch((error) => {
-            console.error("Failed to fetch opponent:", error);
-          });
+        try {
+          const username = await this.fetchUsername(this.opponentId)
+          this.opponentUsername = username
+        } catch (error) {
+          console.error("Failed to fetch opponent:", error)
+        }
       }
-    },
+    }
   }
 }
 </script>
-
-<template>
-  <div class="w-100 border border-dashed border-1">
-    <button v-if="opponentId" @click="joinDebate" class="btn btn-primary">Press to debate against @{{opponentUsername}}</button>
-    <button v-else @click="joinDebate" class="btn btn-primary">Press to join debate</button>
-  </div>
-</template>
 
 <style scoped>
 
