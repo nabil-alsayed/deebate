@@ -99,101 +99,152 @@ import defaultAvatar from '@/assets/avatars/user-avatar.svg'
 
 export default {
   name: 'Argument',
+
   props: {
     argument: { type: String, required: true },
     debate: { type: Object, required: true },
   },
+
   data() {
     return {
+      // Argument data
       content: '',
       owner: { _id: '', username: '', avatar: '' },
-      commentsWithUserDetails: [],
-      newComment: '',
+      avatar: defaultAvatar,
+      currentUser: null,
+
+      // State flags
+      loading: true,
       isOwner: false,
       isWinnerByAI: false,
       isWinnerByAudience: false,
       showCommentsPopup: false,
+
+      // Visual side tag
       side: {
         text: '',
         backgroundColor: ''
       },
-      avatar: defaultAvatar,
+
+      // Comments
+      commentsWithUserDetails: [],
+      newComment: '',
       updatingComment: null,
-      updatedCommentContent: '',
-      loading: true
+      updatedCommentContent: ''
     }
   },
+
+  computed: {
+    authHeader() {
+      return {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    }
+  },
+
   async created() {
     await this.fetchData()
   },
+
   methods: {
+    // Main initialization
     async fetchData() {
       try {
-        await this.fetchArgument();
-        await this.fetchOwner();
-        await this.checkIfOwner();
-        await this.fetchCommentUserDetails();
-        await this.fetchUserSide();
-        this.checkWinner();
+        await this.fetchArgument()
+        await this.fetchOwner()
+        await this.checkIfOwner()
+        await this.fetchCommentUserDetails()
+        await this.fetchUserSide()
+        this.checkWinner()
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error)
       } finally {
-        this.loading = false; // End loading state
+        this.loading = false
       }
     },
+
+    // Ownership logic
     async checkIfOwner() {
       try {
-        const user = await getLoggedInUser()
-        this.isOwner = user && user._id === this.owner._id
+        if (!this.currentUser) {
+          this.currentUser = await getLoggedInUser()
+        }
+        this.isOwner = this.currentUser && this.currentUser._id === this.owner._id
       } catch (error) {
         console.error('Failed to check ownership:', error)
       }
     },
+
+    // Winner check logic
     checkWinner() {
-      // Ensure the argument's side and winner's side are both lowercase for comparison
-      const argumentSide = this.side.text.toLowerCase();
-      const aiWinnerSide = this.debate.winnerByAI?.toLowerCase();
-      const audienceWinnerSide = this.debate.winnerByAudience?.toLowerCase();
-      // Set the winner flags based on the comparison
-      this.isWinnerByAI = aiWinnerSide === argumentSide;
-      this.isWinnerByAudience = audienceWinnerSide === argumentSide;
+      const argumentSide = this.side.text.toLowerCase()
+      const aiWinner = this.debate.winnerByAI?.toLowerCase()
+      const audienceWinner = this.debate.winnerByAudience?.toLowerCase()
+
+      this.isWinnerByAI = aiWinner === argumentSide
+      this.isWinnerByAudience = audienceWinner === argumentSide
     },
+
+    // Argument and user info
     async fetchArgument() {
       try {
-        const { data } = await Api.get(`/debates/${this.debate._id}/arguments/${this.argument}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
+        const { data } = await Api.get(
+          `/debates/${this.debate._id}/arguments/${this.argument}`,
+          { headers: this.authHeader }
+        )
+
         this.content = data.content
         this.owner._id = data.owner
         this.commentsWithUserDetails = data.comments
-        const isWith = data.side === 'with';
-        // Set the side based on where the user is found
-        if (isWith) {
-          this.side.text = 'With'
-          this.side.backgroundColor = '#007769'
-        } else {
-          this.side.text = 'Against'
-          this.side.backgroundColor = '#a83737'
-        }
+
+        const isWith = data.side === 'with'
+        this.side.text = isWith ? 'With' : 'Against'
+        this.side.backgroundColor = isWith ? '#007769' : '#a83737'
+
       } catch (error) {
         console.error('Failed to fetch argument:', error)
       }
     },
+
+    // Owner info
     async fetchOwner() {
       try {
-        const { data } = await Api.get(`/users/${this.owner._id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
+        const { data } = await Api.get(
+          `/users/${this.owner._id}`,
+          { headers: this.authHeader }
+        )
+
         this.owner = { ...this.owner, ...data.user }
       } catch (error) {
         console.error('Failed to fetch owner:', error)
       }
     },
+
+    // User side logic
+    async fetchUserSide() {
+      try {
+        const { data } = await Api.get(
+          `/debates/${this.debate._id}`,
+          { headers: this.authHeader }
+        )
+
+        const isWith = data.debate.votesWith.includes(this.owner._id)
+        this.side.text = isWith ? 'With' : 'Against'
+        this.side.backgroundColor = isWith ? '#007769' : '#a83737'
+
+      } catch (error) {
+        console.error('Failed to fetch user side:', error)
+      }
+    },
+
+    // Argument deletion
     async deleteArgument() {
       try {
-        const response = await Api.delete(`/debates/${this.debate._id}/arguments/${this.argument}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
+        const response = await Api.delete(
+          `/debates/${this.debate._id}/arguments/${this.argument}`,
+          { headers: this.authHeader }
+        )
+
         if (response.status >= 200 && response.status < 300) {
           this.$emit('argument-deleted', this.argument)
           window.location.reload()
@@ -202,13 +253,16 @@ export default {
         console.error('Failed to delete argument:', error)
       }
     },
+
+    // Comment loading
     async fetchCommentUserDetails() {
       this.commentsWithUserDetails = await Promise.all(
-        this.commentsWithUserDetails.map(async (comment) => {
+        this.commentsWithUserDetails.map(async comment => {
           try {
-            const { data } = await Api.get(`/users/${comment.owner}`, {
-              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            })
+            const { data } = await Api.get(
+              `/users/${comment.owner}`,
+              { headers: this.authHeader }
+            )
             return { ...comment, userDetails: data.user }
           } catch (error) {
             console.error('Failed to fetch comment owner details:', error)
@@ -217,54 +271,42 @@ export default {
         })
       )
     },
-    async fetchUserSide() {
-      try {
-        const response = await Api.get(`/debates/${this.debate._id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
 
-        // Check if the user is in votesWith or votesAgainst
-        const isWith = response.data.debate.votesWith.includes(this.owner._id)
-
-        // Set the side based on where the user is found
-        if (isWith) {
-          this.side.text = 'With'
-          this.side.backgroundColor = '#007769'
-        } else {
-          this.side.text = 'Against'
-          this.side.backgroundColor = '#a83737'
-        }
-      } catch (error) {
-        console.error('Failed to fetch user side:', error)
-      }
-    },
+    // Comment submission
     async submitComment() {
-      // Trim all spaces from the newComment
-      const trimmedComment = this.newComment.replace(/[\r\n]+/g, '');
+      const trimmed = this.newComment.replace(/[\r\n]+/g, '')
 
-      if (!trimmedComment) {
-        alert('Please enter a valid comment');
-        return;
+      if (!trimmed) {
+        alert('Please enter a valid comment')
+        return
       }
+
       try {
-        const { data } = await Api.post(`/debates/${this.debate._id}/arguments/${this.argument}/comments`,
-          { content: trimmedComment },
-          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        const { data } = await Api.post(
+          `/debates/${this.debate._id}/arguments/${this.argument}/comments`,
+          { content: trimmed },
+          { headers: this.authHeader }
         )
-        const currentUser = await getLoggedInUser()
-        this.commentsWithUserDetails.push({ ...data, userDetails: currentUser })
+
+        if (!this.currentUser) {
+          this.currentUser = await getLoggedInUser()
+        }
+        this.commentsWithUserDetails.push({ ...data, userDetails: this.currentUser })
         this.newComment = ''
       } catch (error) {
         console.error('Error submitting comment:', error)
       }
     },
 
-
+    // Ownership check for a specific comment
     async isCommentOwner(comment) {
-      const currentUser = await getLoggedInUser()
-      return currentUser && currentUser._id === comment.owner
+      if (!this.currentUser) {
+        this.currentUser = await getLoggedInUser()
+      }
+      return this.currentUser && this.currentUser._id === comment.owner
     },
 
+    // Comment editing workflow
     startUpdateComment(comment) {
       this.updatingComment = comment
       this.updatedCommentContent = comment.content
@@ -276,20 +318,24 @@ export default {
     },
 
     async submitCommentUpdate() {
-      const trimmedComment = this.updatedCommentContent.replace(/[\r\n]+/g, '');
+      const trimmed = this.updatedCommentContent.replace(/[\r\n]+/g, '')
 
-      if (!trimmedComment) {
+      if (!trimmed) {
         alert('Please enter a comment')
         return
       }
+
       try {
-        const { data } = await Api.put(`/debates/${this.debate._id}/arguments/${this.argument}/comments/${this.updatingComment._id}`,
-          { content: trimmedComment },
-          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        const { data } = await Api.put(
+          `/debates/${this.debate._id}/arguments/${this.argument}/comments/${this.updatingComment._id}`,
+          { content: trimmed },
+          { headers: this.authHeader }
         )
 
-        // Update the comment in the local state
-        const index = this.commentsWithUserDetails.findIndex(c => c._id === this.updatingComment._id)
+        const index = this.commentsWithUserDetails.findIndex(
+          c => c._id === this.updatingComment._id
+        )
+
         if (index !== -1) {
           this.commentsWithUserDetails[index].content = data.updatedComment.content
         }
@@ -302,7 +348,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style scoped>
