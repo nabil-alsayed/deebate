@@ -16,19 +16,10 @@
 <script>
 import Argument from '@/components/arguments/Argument.vue'
 import JoinDebate from '@/components/arguments/JoinDebate.vue'
+
 export default {
   name: 'ArgumentsList',
-  computed: {
-    argument() {
-      return this.argument
-    }
-  },
-  components: { JoinDebate, Argument },
-  data() {
-    return {
-      argumentsList: [...this.arguments]
-    }
-  },
+
   props: {
     arguments: {
       type: Array,
@@ -39,16 +30,37 @@ export default {
       required: true
     },
   },
+
+  components: {
+    Argument,
+    JoinDebate
+  },
+
+  data() {
+    return {
+      // Local copy of arguments to manage deletion without mutating the prop
+      localArguments: [...this.arguments]
+    }
+  },
+
+  watch: {
+    // Ensure local copy stays in sync if parent updates arguments prop
+    arguments(newArgs) {
+      this.localArguments = [...newArgs]
+    }
+  },
+
   methods: {
+    /**
+     * Handles argument deletion and updates the local list
+     * @param {String} deletedArgumentId - ID of the argument to remove
+     */
     handleArgumentDeleted(deletedArgumentId) {
-      // Remove the argument by its _id
-      this.argumentsList = this.argumentsList.filter(argument => argument._id !== deletedArgumentId)
-      // Emit the updated list to the parent component if necessary
-      this.$emit('update-arguments', this.argumentsList)
+      this.localArguments = this.localArguments.filter(arg => arg._id !== deletedArgumentId)
+      this.$emit('update-arguments', this.localArguments)
     }
   }
 }
-
 </script>
 
 <style scoped>
