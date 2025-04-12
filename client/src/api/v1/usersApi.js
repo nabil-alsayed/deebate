@@ -1,32 +1,44 @@
 import { jwtDecode } from 'jwt-decode';
 import { Api } from './Api';
 
+/**
+ * Get the currently logged-in user's data from the backend.
+ *
+ * @returns {Promise<Object|null>} The user object, or null if something fails.
+ */
 export const getLoggedInUser = async () => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    console.warn('No token found in localStorage.');
+    return null;
+  }
+
+  let userId;
+
   try {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    // Decode the token to extract user information
-    const decodedToken = jwtDecode(token);
-    const userId = decodedToken.id;
+    const decoded = jwtDecode(token);
+    userId = decoded?.id;
 
     if (!userId) {
-      throw new Error('User ID not found in token');
+      console.warn('No user ID found in the decoded token.');
+      return null;
     }
+  } catch (err) {
+    console.error('Failed to decode token:', err);
+    return null;
+  }
 
-    // Fetch the user details using the extracted user ID, include the token in the Authorization header
+  try {
     const response = await Api.get(`/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    return response.data.user;
-  } catch (error) {
-    console.error('Error fetching logged-in user:', error.message);
+    return response?.data?.user || null;
+  } catch (err) {
+    console.error('Failed to fetch user data:', err?.message || err);
     return null;
   }
 };
