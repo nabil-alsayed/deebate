@@ -19,7 +19,7 @@
           v-model="user.password"
           placeholder="Password"
         />
-        <b-button type="submit" class="button">
+        <b-button type="submit" class="button" :disabled="isLoading">
           <span v-if="isLoading">Logging in...</span>
           <span v-else>Log in</span>
         </b-button>
