@@ -49,6 +49,33 @@ The purpose of this project is to create a platform where users can engage in st
   Provides a form for users to log into the system or create a new account.
   Users can enter their credentials to access debates or sign up if they are new.
 
+## API Tests (Postman & Newman)
+
+This repo includes an end-to-end Postman collection that signs up a user, logs in, creates debates, posts arguments/comments, edits, and deletes — including negative cases (e.g. 403 on forbidden deletes).
+
+### How to run in Postman
+1. Import:
+   - `tests/deebate.postman_collection.json`
+   - `tests/local.postman_environment.json`
+2. Set environment variables:
+   - `baseUrl` = `http://localhost:3001/api/v1`
+   - `invitationCode` = `<your_admin_invite_code_if_used>`
+3. Start the API (default: `localhost:3001`).
+4. In Postman, run the collection or the `E2E` folder:
+   - Order: **Signup → Login → Post Debate → Post Argument → Post Comment → GETs → PATCH/PUT → DELETEs**.
+
+### How to run in CI with Newman
+```bash
+# Install once
+npm i -D newman newman-reporter-junit
+
+# Run locally
+npx newman run tests/deebate.postman_collection.json \
+  -e tests/local.postman_environment.json \
+  --reporters cli,junit \
+  --reporter-junit-export reports/newman.xml
+```
+
 ### Advanced Feature
 
 JudgeAPI for Fair and Automated Debate Conclusions
